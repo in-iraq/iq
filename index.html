@@ -1,512 +1,244 @@
-<!doctype html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>inIQ</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
-<style>
-:root {
-  color-scheme: light;
-  --bg: #F4F6FA;
-  --ink: #0F1B3D;
-  --muted: #46527A;
-  --accent: #2D5BFF;
-  --accent-ink: #1F46D6;
-  --accent-soft: #E8EEFF;
-  --line: #C3CCE0;
-  --card: #FFFFFF;
-  --card-line: #DDE3F0;
-  --err: #B3261E;
-  --ok: #1B6B3A;
-}
-* { box-sizing: border-box; }
-html, body { margin: 0; }
-body {
-  min-height: 100vh;
-  background: var(--bg);
-  color: var(--ink);
-  font-family: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
-}
-main {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  padding: 48px 16px;
-  text-align: center;
-}
-h1.logo {
-  margin: 0;
-  font-family: 'Space Grotesk', 'Helvetica Neue', Arial, sans-serif;
-  font-weight: 700;
-  font-size: clamp(88px, 16vw, 200px);
-  line-height: 1;
-  letter-spacing: -0.04em;
-  color: var(--ink);
-}
-h1.logo span { color: var(--accent); }
-.tag {
-  margin: 0;
-  font-weight: 500;
-  font-size: clamp(20px, 3vw, 34px);
-  line-height: 1.5;
-  color: var(--muted);
-}
-.actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 16px; }
-.btn {
-  min-height: 52px;
-  border: 0;
-  border-radius: 10px;
-  background: var(--accent);
-  color: #FFFFFF;
-  font-family: inherit;
-  font-size: 17px;
-  font-weight: 600;
-  cursor: pointer;
-}
-.btn:disabled { opacity: 0.6; cursor: default; }
-.btn.cta { padding: 0 40px; font-size: 18px; }
-.btn.outline {
-  background: transparent;
-  color: var(--accent-ink);
-  box-shadow: inset 0 0 0 2px var(--accent);
-}
-.btn.link {
-  min-height: 44px;
-  padding: 0 4px;
-  background: transparent;
-  color: var(--accent-ink);
-  font-size: 15px;
-  font-weight: 500;
-}
-button:focus-visible, input:focus-visible, .seg input:focus-visible + label {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-.card {
-  width: 100%;
-  max-width: 440px;
-  margin-top: 16px;
-  padding: 28px;
-  background: var(--card);
-  border: 1px solid var(--card-line);
-  border-radius: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  text-align: right;
-}
-.card[hidden], [hidden] { display: none !important; }
-.card h2 { margin: 0; font-size: 22px; font-weight: 600; }
-.card p { margin: 0; font-size: 15px; line-height: 1.7; color: var(--muted); }
-.field { display: flex; flex-direction: column; gap: 6px; border: 0; margin: 0; padding: 0; min-width: 0; }
-.field label, .field legend { padding: 0; font-size: 14px; font-weight: 500; color: var(--muted); }
-.field legend { margin-bottom: 6px; }
-input[type=text], input[type=email], input[type=password], input[type=date] {
-  width: 100%;
-  height: 48px;
-  padding: 0 14px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #FFFFFF;
-  color: var(--ink);
-  font-family: inherit;
-  font-size: 16px;
-}
-input::placeholder { color: #7A85A6; }
-input[type=email], input[type=password] { text-align: left; }
-.seg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-.seg input { position: absolute; opacity: 0; pointer-events: none; }
-.seg label {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 48px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #FFFFFF;
-  color: var(--ink);
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-}
-.seg input:checked + label {
-  border: 2px solid var(--accent);
-  background: var(--accent-soft);
-  color: var(--accent-ink);
-  font-weight: 600;
-}
-.code-input {
-  height: 56px;
-  font-family: 'Space Grotesk', Arial, sans-serif;
-  font-size: 26px;
-  font-weight: 500;
-  letter-spacing: 0.3em;
-  text-align: center;
-}
-.msg { min-height: 0; margin: 0; font-size: 14px; line-height: 1.5; }
-.msg.err { color: var(--err); }
-.msg.ok { color: var(--ok); }
-.row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; }
-.ltr { direction: ltr; unicode-bidi: isolate; display: inline-block; font-weight: 600; color: var(--ink); }
-.password {
-  direction: ltr;
-  padding: 16px;
-  border: 1px solid var(--card-line);
-  border-radius: 8px;
-  background: var(--bg);
-  font-family: 'Space Grotesk', Arial, sans-serif;
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-align: center;
-  user-select: all;
-  overflow-wrap: anywhere;
-}
-dialog.welcome {
-  width: calc(100% - 32px);
-  max-width: 420px;
-  padding: 32px 28px;
-  border: 0;
-  border-radius: 16px;
-  background: var(--card);
-  color: var(--ink);
-  box-shadow: 0 20px 60px rgba(15, 27, 61, 0.25);
-  text-align: center;
-}
-dialog.welcome::backdrop { background: rgba(15, 27, 61, 0.45); }
-.welcome-body { display: flex; flex-direction: column; gap: 16px; }
-.hello { margin: 0; font-size: 16px; color: var(--muted); }
-.who { margin: 0; font-size: 30px; font-weight: 600; line-height: 1.4; overflow-wrap: anywhere; }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
-</style>
-</head>
-<body>
-<main>
-  <h1 class="logo" dir="ltr" aria-label="inIQ"><span>in</span>IQ</h1>
-  <p class="tag">للحلول البرمجية والتخزين السحابي</p>
+// inIQ: التسجيل والتحقق من البريد وتسجيل الدخول وحفظ الحسابات في Google Sheet
 
-  <div id="actions" class="actions">
-    <button id="open-login" class="btn cta outline" type="button">تسجيل الدخول</button>
-    <button id="open" class="btn cta" type="button">إنشاء حساب</button>
-  </div>
+const SHEET_ID = '14hJwqQ0EMKf-sSkCBxH8FHBNaFkAic765WoN07FXMMA';
+const CODE_TTL = 600;          // مدة صلاحية رمز التأكيد بالثواني (10 دقائق)
+const MAX_ATTEMPTS = 5;        // عدد محاولات إدخال رمز التأكيد
+const RESEND_WAIT = 60;        // أقل مدة بين رسالتين لنفس البريد بالثواني
+const MAX_LOGIN_FAILS = 5;     // عدد محاولات تسجيل الدخول الخاطئة قبل القفل
+const LOGIN_LOCK_TTL = 900;    // مدة القفل بالثواني (15 دقيقة)
 
-  <form id="loginForm" class="card" hidden novalidate>
-    <h2>تسجيل الدخول</h2>
-
-    <div class="field">
-      <label for="l-email">البريد الإلكتروني</label>
-      <input id="l-email" type="email" dir="ltr" autocomplete="email" placeholder="name@example.com">
-    </div>
-
-    <div class="field">
-      <label for="l-password">كلمة المرور</label>
-      <input id="l-password" type="password" dir="ltr" autocomplete="current-password" placeholder="iniq:00000000">
-    </div>
-
-    <p id="login-msg" class="msg err" role="alert" hidden></p>
-
-    <button id="login-submit" class="btn" type="submit">دخول</button>
-    <div class="row">
-      <button id="login-to-signup" class="btn link" type="button">ليس لديك حساب؟ إنشاء حساب</button>
-      <button id="login-cancel" class="btn link" type="button">إلغاء</button>
-    </div>
-  </form>
-
-  <form id="form" class="card" hidden novalidate>
-    <h2>إنشاء حساب</h2>
-
-    <div class="field">
-      <label for="f-name">الاسم الثلاثي</label>
-      <input id="f-name" type="text" autocomplete="name" placeholder="الاسم واسم الأب واسم الجد">
-    </div>
-
-    <fieldset class="field">
-      <legend>الجنس</legend>
-      <div class="seg">
-        <div>
-          <input type="radio" name="gender" id="g-male" value="male">
-          <label for="g-male">ذكر</label>
-        </div>
-        <div>
-          <input type="radio" name="gender" id="g-female" value="female">
-          <label for="g-female">أنثى</label>
-        </div>
-      </div>
-    </fieldset>
-
-    <div class="field">
-      <label for="f-birth">تاريخ الميلاد</label>
-      <input id="f-birth" type="date">
-    </div>
-
-    <div class="field">
-      <label for="f-email">البريد الإلكتروني</label>
-      <input id="f-email" type="email" dir="ltr" autocomplete="email" placeholder="name@example.com">
-    </div>
-
-    <p id="form-msg" class="msg err" role="alert" hidden></p>
-
-    <button id="form-submit" class="btn" type="submit">إرسال رمز التأكيد</button>
-    <div class="row">
-      <button id="form-to-login" class="btn link" type="button">لديك حساب؟ تسجيل الدخول</button>
-      <button id="form-cancel" class="btn link" type="button">إلغاء</button>
-    </div>
-  </form>
-
-  <form id="codeForm" class="card" hidden novalidate>
-    <h2>تأكيد البريد الإلكتروني</h2>
-    <p>أدخل رمز التأكيد المكوّن من 6 أرقام المرسل إلى <span id="code-email" class="ltr"></span></p>
-
-    <div class="field">
-      <label for="f-code">رمز التأكيد</label>
-      <input id="f-code" class="code-input" type="text" dir="ltr" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000">
-    </div>
-
-    <p id="code-msg" class="msg err" role="alert" hidden></p>
-    <p id="code-info" class="msg ok" role="status" hidden></p>
-
-    <button id="code-submit" class="btn" type="submit">تأكيد وإنشاء الحساب</button>
-    <div class="row">
-      <button id="code-resend" class="btn link" type="button">إرسال رمز جديد</button>
-      <button id="code-back" class="btn link" type="button">تعديل البيانات</button>
-    </div>
-  </form>
-
-  <section id="done" class="card" hidden>
-    <h2>تم إنشاء حسابك</h2>
-    <p>كلمة المرور هذه مرتبطة بالبريد <span id="done-email" class="ltr"></span>. احتفظ بها في مكان آمن، فلن تظهر مرة أخرى.</p>
-
-    <div class="field">
-      <span style="font-size:14px;font-weight:500;color:var(--muted)">كلمة المرور</span>
-      <div id="done-password" class="password"></div>
-    </div>
-
-    <p id="copy-msg" class="msg" role="status" hidden></p>
-
-    <button id="copy" class="btn" type="button">نسخ كلمة المرور</button>
-    <button id="done-close" class="btn link" type="button">إغلاق</button>
-  </section>
-</main>
-
-<dialog id="welcome" class="welcome" aria-labelledby="welcome-name">
-  <div class="welcome-body">
-    <p class="hello">مرحبًا بك</p>
-    <p id="welcome-name" class="who"></p>
-    <button id="logout" class="btn" type="button">تسجيل الخروج</button>
-  </div>
-</dialog>
-
-<script>
-(function () {
-  var API_URL = 'https://script.google.com/macros/s/AKfycbw3hgs-BJu9Tbnvu8etkI4AUBSb6BLMIAr7tubNDwAukIDbfte5BsLLCCvzIzEQ1m3NDA/exec';
-
-  var MESSAGES = {
-    exists: 'يوجد حساب مرتبط بهذا البريد الإلكتروني.',
-    wait: 'أُرسل رمز قبل قليل. انتظر دقيقة ثم حاول مرة أخرى.',
-    invalid: 'تحقق من البيانات المدخلة وحاول مرة أخرى.',
-    wrong_code: 'رمز التأكيد غير صحيح. تحقق منه وحاول مرة أخرى.',
-    expired: 'انتهت صلاحية الرمز. اضغط "إرسال رمز جديد".',
-    too_many: 'تجاوزت عدد المحاولات. اضغط "إرسال رمز جديد".',
-    invalid_login: 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
-    locked: 'محاولات خاطئة كثيرة. حاول مرة أخرى بعد 15 دقيقة.',
-    network: 'تعذّر الاتصال بالخادم. تحقق من الإنترنت وحاول مرة أخرى.',
-    generic: 'حدث خطأ غير متوقع. حاول مرة أخرى.'
-  };
-
-  var $ = function (id) { return document.getElementById(id); };
-  var lastData = null;
-  var sections = ['loginForm', 'form', 'codeForm', 'done'];
-
-  var today = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
-  $('f-birth').max = today;
-
-  function show(name) {
-    sections.forEach(function (id) { $(id).hidden = id !== name; });
-    $('actions').hidden = !!name;
-    var focusId = { loginForm: 'l-email', form: 'f-name', codeForm: 'f-code' }[name];
-    if (focusId) $(focusId).focus();
+function doPost(e) {
+  let body;
+  try {
+    body = JSON.parse(e.postData.contents);
+  } catch (err) {
+    return out({ ok: false, error: 'bad_request' });
   }
+  if (body.action === 'start') return out(start(body));
+  if (body.action === 'verify') return out(verify(body));
+  if (body.action === 'login') return out(login(body));
+  if (body.action === 'forgot') return out(forgot(body));
+  if (body.action === 'reset') return out(resetPassword(body));
+  return out({ ok: false, error: 'bad_request' });
+}
 
-  function setMsg(id, text) {
-    var el = $(id);
-    el.textContent = text || '';
-    el.hidden = !text;
-  }
+function out(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
 
-  function busy(btn, on, label) {
-    if (on) { btn.dataset.label = btn.textContent; btn.textContent = label; }
-    else if (btn.dataset.label) { btn.textContent = btn.dataset.label; }
-    btn.disabled = on;
-  }
+function sheet() {
+  return SpreadsheetApp.openById(SHEET_ID).getSheets()[0];
+}
 
-  function api(payload) {
-    return fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) })
-      .then(function (res) { return res.json(); })
-      .catch(function () { return { ok: false, error: 'network' }; });
-  }
+function normEmail(s) {
+  return String(s || '').trim().toLowerCase();
+}
 
-  function errText(res) {
-    return MESSAGES[res && res.error] || MESSAGES.generic;
-  }
-
-  function readForm() {
-    var g = document.querySelector('input[name=gender]:checked');
-    return {
-      action: 'start',
-      name: $('f-name').value.trim().replace(/\s+/g, ' '),
-      gender: g ? g.value : '',
-      birth: $('f-birth').value,
-      email: $('f-email').value.trim().toLowerCase()
-    };
-  }
-
-  function validate(d) {
-    var words = d.name.split(' ').filter(Boolean);
-    if (words.length < 3 || words.some(function (w) { return w.length < 2; })) return 'أدخل الاسم الثلاثي كاملًا: الاسم واسم الأب واسم الجد.';
-    if (!d.gender) return 'اختر الجنس.';
-    if (!d.birth) return 'أدخل تاريخ الميلاد.';
-    if (d.birth > today) return 'تاريخ الميلاد لا يمكن أن يكون في المستقبل.';
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email)) return 'أدخل بريدًا إلكترونيًا صحيحًا.';
-    return '';
-  }
-
-  function reset() {
-    ['f-name', 'f-birth', 'f-email', 'f-code', 'l-email', 'l-password'].forEach(function (id) { $(id).value = ''; });
-    var g = document.querySelector('input[name=gender]:checked');
-    if (g) g.checked = false;
-    ['form-msg', 'code-msg', 'code-info', 'copy-msg', 'login-msg'].forEach(function (id) { setMsg(id, ''); });
-    $('done-password').textContent = '';
-    $('done-email').textContent = '';
-    $('welcome-name').textContent = '';
-    lastData = null;
-  }
-
-  $('open').addEventListener('click', function () { show('form'); });
-  $('open-login').addEventListener('click', function () { show('loginForm'); });
-  $('form-to-login').addEventListener('click', function () { show('loginForm'); });
-  $('login-to-signup').addEventListener('click', function () { show('form'); });
-
-  $('form-cancel').addEventListener('click', function () { reset(); show(null); });
-  $('login-cancel').addEventListener('click', function () { reset(); show(null); });
-
-  // تسجيل الدخول
-  $('loginForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    var email = $('l-email').value.trim().toLowerCase();
-    var password = $('l-password').value.trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { setMsg('login-msg', 'أدخل بريدًا إلكترونيًا صحيحًا.'); return; }
-    if (!password) { setMsg('login-msg', 'أدخل كلمة المرور.'); return; }
-    setMsg('login-msg', '');
-    var btn = $('login-submit');
-    busy(btn, true, 'جارٍ الدخول...');
-    api({ action: 'login', email: email, password: password }).then(function (res) {
-      busy(btn, false);
-      if (!res.ok) { setMsg('login-msg', errText(res)); return; }
-      $('l-password').value = '';
-      $('welcome-name').textContent = res.name;
-      var dlg = $('welcome');
-      if (typeof dlg.showModal === 'function') dlg.showModal();
-      else dlg.setAttribute('open', '');
-    });
+function emailExists(email) {
+  const sh = sheet();
+  const last = sh.getLastRow();
+  if (last < 2) return false;
+  const emails = sh.getRange(2, 4, last - 1, 1).getValues();
+  return emails.some(function (r) {
+    return String(r[0]).trim().toLowerCase() === email;
   });
+}
 
-  function closeWelcome() {
-    var dlg = $('welcome');
-    if (typeof dlg.close === 'function' && dlg.open) dlg.close();
-    else dlg.removeAttribute('open');
-    reset();
-    show(null);
+// الخطوة 1: فحص البريد، وإن لم يكن مسجلًا يُرسل رمز التأكيد
+function start(b) {
+  const name = String(b.name || '').trim().replace(/\s+/g, ' ');
+  const gender = b.gender === 'male' ? 'ذكر' : b.gender === 'female' ? 'أنثى' : '';
+  const birth = String(b.birth || '');
+  const email = normEmail(b.email);
+
+  const valid = name.split(' ').length >= 3 &&
+    gender &&
+    /^\d{4}-\d{2}-\d{2}$/.test(birth) &&
+    /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+  if (!valid) return { ok: false, error: 'invalid' };
+
+  // يوجد حساب مرتبط بالبريد
+  if (emailExists(email)) return { ok: false, error: 'exists' };
+
+  const cache = CacheService.getScriptCache();
+  if (cache.get('sent:' + email)) return { ok: false, error: 'wait' };
+
+  const code = digits(6);
+  cache.put('pending:' + email,
+    JSON.stringify({ name: name, gender: gender, birth: birth, code: code, attempts: 0 }),
+    CODE_TTL);
+  cache.put('sent:' + email, '1', RESEND_WAIT);
+
+  MailApp.sendEmail({
+    to: email,
+    subject: 'رمز التأكيد - inIQ',
+    body: 'رمز التأكيد الخاص بك: ' + code + '\nينتهي خلال 10 دقائق.'
+  });
+  return { ok: true };
+}
+
+// الخطوة 2: التحقق من الرمز ثم إنشاء الحساب وكلمة المرور
+function verify(b) {
+  const email = normEmail(b.email);
+  const cache = CacheService.getScriptCache();
+  const raw = cache.get('pending:' + email);
+  if (!raw) return { ok: false, error: 'expired' };
+
+  const p = JSON.parse(raw);
+  if (p.attempts >= MAX_ATTEMPTS) {
+    cache.remove('pending:' + email);
+    return { ok: false, error: 'too_many' };
   }
-  $('logout').addEventListener('click', closeWelcome);
-  $('welcome').addEventListener('close', function () { reset(); show(null); });
+  if (String(b.code || '').trim() !== p.code) {
+    p.attempts += 1;
+    cache.put('pending:' + email, JSON.stringify(p), CODE_TTL);
+    return { ok: false, error: 'wrong_code' };
+  }
 
-  // إنشاء حساب
-  $('form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    var d = readForm();
-    var err = validate(d);
-    if (err) { setMsg('form-msg', err); return; }
-    setMsg('form-msg', '');
-    var btn = $('form-submit');
-    busy(btn, true, 'جارٍ الإرسال...');
-    api(d).then(function (res) {
-      busy(btn, false);
-      if (!res.ok) { setMsg('form-msg', errText(res)); return; }
-      lastData = d;
-      $('code-email').textContent = d.email;
-      $('f-code').value = '';
-      setMsg('code-msg', '');
-      setMsg('code-info', '');
-      show('codeForm');
-    });
-  });
+  const lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    if (emailExists(email)) return { ok: false, error: 'exists' };
 
-  $('f-code').addEventListener('input', function () {
-    this.value = this.value.replace(/\D/g, '').slice(0, 6);
-    setMsg('code-msg', '');
-  });
+    const password = 'iniq:' + digits(8);
+    const salt = Utilities.getUuid();
+    const stored = salt + '$' + sha256(salt + password); // يُحفظ الهاش فقط
+    const when = Utilities.formatDate(new Date(), 'Asia/Baghdad', 'yyyy-MM-dd HH:mm');
 
-  $('codeForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    var code = $('f-code').value.trim();
-    if (!/^\d{6}$/.test(code)) { setMsg('code-msg', 'أدخل رمز التأكيد المكوّن من 6 أرقام.'); return; }
-    setMsg('code-msg', '');
-    setMsg('code-info', '');
-    var btn = $('code-submit');
-    busy(btn, true, 'جارٍ التحقق...');
-    api({ action: 'verify', email: lastData.email, code: code }).then(function (res) {
-      busy(btn, false);
-      if (!res.ok) { setMsg('code-msg', errText(res)); return; }
-      $('done-email').textContent = lastData.email;
-      $('done-password').textContent = res.password;
-      setMsg('copy-msg', '');
-      show('done');
-    });
-  });
+    const sh = sheet();
+    const row = sh.getLastRow() + 1;
+    sh.getRange(row, 1, 1, 6)
+      .setNumberFormat('@')
+      .setValues([[p.name, p.gender, p.birth, email, stored, when]]);
 
-  $('code-resend').addEventListener('click', function () {
-    var btn = $('code-resend');
-    setMsg('code-msg', '');
-    setMsg('code-info', '');
-    busy(btn, true, 'جارٍ الإرسال...');
-    api(lastData).then(function (res) {
-      busy(btn, false);
-      if (!res.ok) { setMsg('code-msg', errText(res)); return; }
-      $('f-code').value = '';
-      setMsg('code-info', 'أُرسل رمز جديد إلى بريدك.');
-    });
-  });
+    cache.remove('pending:' + email);
+    return { ok: true, password: password };
+  } finally {
+    lock.releaseLock();
+  }
+}
 
-  $('code-back').addEventListener('click', function () { show('form'); });
+// تسجيل الدخول: يتحقق من البريد وكلمة المرور ويرجع الاسم
+function login(b) {
+  const email = normEmail(b.email);
+  const password = String(b.password || '').trim();
+  if (!email || !password) return { ok: false, error: 'invalid_login' };
 
-  $('copy').addEventListener('click', function () {
-    var text = $('done-password').textContent;
-    var msg = $('copy-msg');
-    function fail() {
-      msg.className = 'msg err';
-      setMsg('copy-msg', 'تعذّر النسخ تلقائيًا. حدّد كلمة المرور وانسخها يدويًا.');
-      var range = document.createRange();
-      range.selectNodeContents($('done-password'));
-      var sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(range);
+  const cache = CacheService.getScriptCache();
+  const failKey = 'fail:' + email;
+  const fails = Number(cache.get(failKey) || 0);
+  if (fails >= MAX_LOGIN_FAILS) return { ok: false, error: 'locked' };
+
+  const sh = sheet();
+  const last = sh.getLastRow();
+  if (last >= 2) {
+    const rows = sh.getRange(2, 1, last - 1, 6).getValues();
+    for (let i = 0; i < rows.length; i++) {
+      if (String(rows[i][3]).trim().toLowerCase() === email) {
+        const parts = String(rows[i][4]).split('$');
+        if (parts.length === 2 && sha256(parts[0] + password) === parts[1]) {
+          cache.remove(failKey);
+          return { ok: true, name: String(rows[i][0]) };
+        }
+        break;
+      }
     }
-    try {
-      navigator.clipboard.writeText(text).then(function () {
-        msg.className = 'msg ok';
-        setMsg('copy-msg', 'تم نسخ كلمة المرور.');
-      }, fail);
-    } catch (err) { fail(); }
-  });
+  }
 
-  $('done-close').addEventListener('click', function () { reset(); show(null); });
-})();
-</script>
-</body>
-</html>
+  cache.put(failKey, String(fails + 1), LOGIN_LOCK_TTL);
+  return { ok: false, error: 'invalid_login' }; // نفس الرسالة للبريد غير المسجل وللكلمة الخاطئة
+}
+
+// رقم صف البريد في الشيت (0 إن لم يوجد)
+function findRow(email) {
+  const sh = sheet();
+  const last = sh.getLastRow();
+  if (last < 2) return 0;
+  const emails = sh.getRange(2, 4, last - 1, 1).getValues();
+  for (let i = 0; i < emails.length; i++) {
+    if (String(emails[i][0]).trim().toLowerCase() === email) return i + 2;
+  }
+  return 0;
+}
+
+// نسيت كلمة المرور، الخطوة 1: يرسل رمز التأكيد إلى البريد المسجل
+function forgot(b) {
+  const email = normEmail(b.email);
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return { ok: false, error: 'invalid' };
+  if (!findRow(email)) return { ok: false, error: 'not_found' };
+
+  const cache = CacheService.getScriptCache();
+  if (cache.get('rsent:' + email)) return { ok: false, error: 'wait' };
+
+  const code = digits(6);
+  cache.put('reset:' + email, JSON.stringify({ code: code, attempts: 0 }), CODE_TTL);
+  cache.put('rsent:' + email, '1', RESEND_WAIT);
+
+  MailApp.sendEmail({
+    to: email,
+    subject: 'استعادة كلمة المرور - inIQ',
+    body: 'رمز استعادة كلمة المرور: ' + code +
+      '\nينتهي خلال 10 دقائق.\nإذا لم تطلب ذلك فتجاهل هذه الرسالة.'
+  });
+  return { ok: true };
+}
+
+// نسيت كلمة المرور، الخطوة 2: يتحقق من الرمز ويولّد كلمة مرور جديدة
+function resetPassword(b) {
+  const email = normEmail(b.email);
+  const cache = CacheService.getScriptCache();
+  const raw = cache.get('reset:' + email);
+  if (!raw) return { ok: false, error: 'expired' };
+
+  const p = JSON.parse(raw);
+  if (p.attempts >= MAX_ATTEMPTS) {
+    cache.remove('reset:' + email);
+    return { ok: false, error: 'too_many' };
+  }
+  if (String(b.code || '').trim() !== p.code) {
+    p.attempts += 1;
+    cache.put('reset:' + email, JSON.stringify(p), CODE_TTL);
+    return { ok: false, error: 'wrong_code' };
+  }
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    const row = findRow(email);
+    if (!row) return { ok: false, error: 'not_found' };
+
+    const password = 'iniq:' + digits(8);
+    const salt = Utilities.getUuid();
+    sheet().getRange(row, 5)
+      .setNumberFormat('@')
+      .setValue(salt + '$' + sha256(salt + password)); // تُستبدل البصمة القديمة
+
+    cache.remove('reset:' + email);
+    cache.remove('fail:' + email);
+    return { ok: true, password: password };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// أرقام عشوائية من معرّف UUID
+function digits(n) {
+  let result = '';
+  while (result.length < n) {
+    const hex = Utilities.getUuid().replace(/-/g, '');
+    for (let i = 0; i < hex.length - 1 && result.length < n; i += 2) {
+      const v = parseInt(hex.substr(i, 2), 16);
+      if (v < 250) result += String(v % 10);
+    }
+  }
+  return result;
+}
+
+function sha256(text) {
+  return Utilities.computeDigest(
+    Utilities.DigestAlgorithm.SHA_256, text, Utilities.Charset.UTF_8
+  ).map(function (b) {
+    return ('0' + (b & 0xff).toString(16)).slice(-2);
+  }).join('');
+}
