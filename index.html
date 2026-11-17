@@ -57,6 +57,7 @@ h1.logo span { color: var(--accent); }
   line-height: 1.5;
   color: var(--muted);
 }
+.actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 16px; }
 .btn {
   min-height: 52px;
   border: 0;
@@ -69,7 +70,12 @@ h1.logo span { color: var(--accent); }
   cursor: pointer;
 }
 .btn:disabled { opacity: 0.6; cursor: default; }
-.btn.cta { margin-top: 16px; padding: 0 48px; font-size: 18px; }
+.btn.cta { padding: 0 40px; font-size: 18px; }
+.btn.outline {
+  background: transparent;
+  color: var(--accent-ink);
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
 .btn.link {
   min-height: 44px;
   padding: 0 4px;
@@ -101,7 +107,7 @@ button:focus-visible, input:focus-visible, .seg input:focus-visible + label {
 .field { display: flex; flex-direction: column; gap: 6px; border: 0; margin: 0; padding: 0; min-width: 0; }
 .field label, .field legend { padding: 0; font-size: 14px; font-weight: 500; color: var(--muted); }
 .field legend { margin-bottom: 6px; }
-input[type=text], input[type=email], input[type=date] {
+input[type=text], input[type=email], input[type=password], input[type=date] {
   width: 100%;
   height: 48px;
   padding: 0 14px;
@@ -113,7 +119,7 @@ input[type=text], input[type=email], input[type=date] {
   font-size: 16px;
 }
 input::placeholder { color: #7A85A6; }
-input[type=email] { text-align: left; }
+input[type=email], input[type=password] { text-align: left; }
 .seg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .seg input { position: absolute; opacity: 0; pointer-events: none; }
 .seg label {
@@ -162,6 +168,21 @@ input[type=email] { text-align: left; }
   user-select: all;
   overflow-wrap: anywhere;
 }
+dialog.welcome {
+  width: calc(100% - 32px);
+  max-width: 420px;
+  padding: 32px 28px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--card);
+  color: var(--ink);
+  box-shadow: 0 20px 60px rgba(15, 27, 61, 0.25);
+  text-align: center;
+}
+dialog.welcome::backdrop { background: rgba(15, 27, 61, 0.45); }
+.welcome-body { display: flex; flex-direction: column; gap: 16px; }
+.hello { margin: 0; font-size: 16px; color: var(--muted); }
+.who { margin: 0; font-size: 30px; font-weight: 600; line-height: 1.4; overflow-wrap: anywhere; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 </head>
@@ -170,7 +191,32 @@ input[type=email] { text-align: left; }
   <h1 class="logo" dir="ltr" aria-label="inIQ"><span>in</span>IQ</h1>
   <p class="tag">للحلول البرمجية والتخزين السحابي</p>
 
-  <button id="open" class="btn cta" type="button">إنشاء حساب</button>
+  <div id="actions" class="actions">
+    <button id="open-login" class="btn cta outline" type="button">تسجيل الدخول</button>
+    <button id="open" class="btn cta" type="button">إنشاء حساب</button>
+  </div>
+
+  <form id="loginForm" class="card" hidden novalidate>
+    <h2>تسجيل الدخول</h2>
+
+    <div class="field">
+      <label for="l-email">البريد الإلكتروني</label>
+      <input id="l-email" type="email" dir="ltr" autocomplete="email" placeholder="name@example.com">
+    </div>
+
+    <div class="field">
+      <label for="l-password">كلمة المرور</label>
+      <input id="l-password" type="password" dir="ltr" autocomplete="current-password" placeholder="iniq:00000000">
+    </div>
+
+    <p id="login-msg" class="msg err" role="alert" hidden></p>
+
+    <button id="login-submit" class="btn" type="submit">دخول</button>
+    <div class="row">
+      <button id="login-to-signup" class="btn link" type="button">ليس لديك حساب؟ إنشاء حساب</button>
+      <button id="login-cancel" class="btn link" type="button">إلغاء</button>
+    </div>
+  </form>
 
   <form id="form" class="card" hidden novalidate>
     <h2>إنشاء حساب</h2>
@@ -207,7 +253,10 @@ input[type=email] { text-align: left; }
     <p id="form-msg" class="msg err" role="alert" hidden></p>
 
     <button id="form-submit" class="btn" type="submit">إرسال رمز التأكيد</button>
-    <button id="form-cancel" class="btn link" type="button">إلغاء</button>
+    <div class="row">
+      <button id="form-to-login" class="btn link" type="button">لديك حساب؟ تسجيل الدخول</button>
+      <button id="form-cancel" class="btn link" type="button">إلغاء</button>
+    </div>
   </form>
 
   <form id="codeForm" class="card" hidden novalidate>
@@ -245,9 +294,17 @@ input[type=email] { text-align: left; }
   </section>
 </main>
 
+<dialog id="welcome" class="welcome" aria-labelledby="welcome-name">
+  <div class="welcome-body">
+    <p class="hello">مرحبًا بك</p>
+    <p id="welcome-name" class="who"></p>
+    <button id="logout" class="btn" type="button">تسجيل الخروج</button>
+  </div>
+</dialog>
+
 <script>
 (function () {
-  var API_URL = 'https://script.google.com/macros/s/AKfycbxpuEVmGMnD4I7bveGtMhU5IYrc_IQX2eUCITvGK26BVTb0hvT1qtuGmZz3xi1znQV3kQ/exec';
+  var API_URL = 'https://script.google.com/macros/s/AKfycbw3hgs-BJu9Tbnvu8etkI4AUBSb6BLMIAr7tubNDwAukIDbfte5BsLLCCvzIzEQ1m3NDA/exec';
 
   var MESSAGES = {
     exists: 'يوجد حساب مرتبط بهذا البريد الإلكتروني.',
@@ -256,21 +313,23 @@ input[type=email] { text-align: left; }
     wrong_code: 'رمز التأكيد غير صحيح. تحقق منه وحاول مرة أخرى.',
     expired: 'انتهت صلاحية الرمز. اضغط "إرسال رمز جديد".',
     too_many: 'تجاوزت عدد المحاولات. اضغط "إرسال رمز جديد".',
+    invalid_login: 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
+    locked: 'محاولات خاطئة كثيرة. حاول مرة أخرى بعد 15 دقيقة.',
     network: 'تعذّر الاتصال بالخادم. تحقق من الإنترنت وحاول مرة أخرى.',
     generic: 'حدث خطأ غير متوقع. حاول مرة أخرى.'
   };
 
   var $ = function (id) { return document.getElementById(id); };
   var lastData = null;
-  var sections = ['form', 'codeForm', 'done'];
+  var sections = ['loginForm', 'form', 'codeForm', 'done'];
 
   var today = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
   $('f-birth').max = today;
 
   function show(name) {
     sections.forEach(function (id) { $(id).hidden = id !== name; });
-    $('open').hidden = !!name;
-    var focusId = { form: 'f-name', codeForm: 'f-code' }[name];
+    $('actions').hidden = !!name;
+    var focusId = { loginForm: 'l-email', form: 'f-name', codeForm: 'f-code' }[name];
     if (focusId) $(focusId).focus();
   }
 
@@ -318,19 +377,56 @@ input[type=email] { text-align: left; }
   }
 
   function reset() {
-    ['f-name', 'f-birth', 'f-email', 'f-code'].forEach(function (id) { $(id).value = ''; });
+    ['f-name', 'f-birth', 'f-email', 'f-code', 'l-email', 'l-password'].forEach(function (id) { $(id).value = ''; });
     var g = document.querySelector('input[name=gender]:checked');
     if (g) g.checked = false;
-    ['form-msg', 'code-msg', 'code-info', 'copy-msg'].forEach(function (id) { setMsg(id, ''); });
+    ['form-msg', 'code-msg', 'code-info', 'copy-msg', 'login-msg'].forEach(function (id) { setMsg(id, ''); });
     $('done-password').textContent = '';
     $('done-email').textContent = '';
+    $('welcome-name').textContent = '';
     lastData = null;
   }
 
   $('open').addEventListener('click', function () { show('form'); });
+  $('open-login').addEventListener('click', function () { show('loginForm'); });
+  $('form-to-login').addEventListener('click', function () { show('loginForm'); });
+  $('login-to-signup').addEventListener('click', function () { show('form'); });
 
   $('form-cancel').addEventListener('click', function () { reset(); show(null); });
+  $('login-cancel').addEventListener('click', function () { reset(); show(null); });
 
+  // تسجيل الدخول
+  $('loginForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var email = $('l-email').value.trim().toLowerCase();
+    var password = $('l-password').value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { setMsg('login-msg', 'أدخل بريدًا إلكترونيًا صحيحًا.'); return; }
+    if (!password) { setMsg('login-msg', 'أدخل كلمة المرور.'); return; }
+    setMsg('login-msg', '');
+    var btn = $('login-submit');
+    busy(btn, true, 'جارٍ الدخول...');
+    api({ action: 'login', email: email, password: password }).then(function (res) {
+      busy(btn, false);
+      if (!res.ok) { setMsg('login-msg', errText(res)); return; }
+      $('l-password').value = '';
+      $('welcome-name').textContent = res.name;
+      var dlg = $('welcome');
+      if (typeof dlg.showModal === 'function') dlg.showModal();
+      else dlg.setAttribute('open', '');
+    });
+  });
+
+  function closeWelcome() {
+    var dlg = $('welcome');
+    if (typeof dlg.close === 'function' && dlg.open) dlg.close();
+    else dlg.removeAttribute('open');
+    reset();
+    show(null);
+  }
+  $('logout').addEventListener('click', closeWelcome);
+  $('welcome').addEventListener('close', function () { reset(); show(null); });
+
+  // إنشاء حساب
   $('form').addEventListener('submit', function (e) {
     e.preventDefault();
     var d = readForm();
